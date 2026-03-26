@@ -220,6 +220,23 @@ box-shadow:0 0 10px rgba(0,0,0,0.2);
 
 @page{
 size:landscape;
+margin:20mm;
+}
+
+/* Logo repetindo em todas as páginas */
+.logo-print{
+position:fixed;
+top:10px;
+left:15px;
+width:200px;
+z-index:9999;
+}
+
+/* Evita sobrepor o conteúdo */
+body{
+margin-top:80px;
+}
+
 }
 
 .filtros{
@@ -236,6 +253,9 @@ display:none;
 </head>
 
 <body>
+
+<img src="https://raw.githubusercontent.com/Painel-Competitividade/imagem/main/logo_HU-EBSERH2.png" 
+class="logo-print">
 
 <div id="loadingOverlay">
 <div id="loadingBox">Carregando...</div>
