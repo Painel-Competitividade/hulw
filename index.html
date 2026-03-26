@@ -16,10 +16,13 @@ background:#f4f6f5;
 }
 
 .institucional{
+position:relative;              /* necessário para posicionar a logo */
 text-align:center;
 background:white;
 padding:15px 10px 5px 10px;
+padding-left:320px;            /* espaço para logo de 300px */
 border-bottom:3px solid #8CC63F;
+min-height:120px;              /* garante altura suficiente */
 }
 
 .inst1{
@@ -243,9 +246,10 @@ display:none;
 <img src="https://raw.githubusercontent.com/Painel-Competitividade/imagem/main/logo_HU-EBSERH2.png" 
 style="
 position:absolute;
-left:15px;
 top:10px;
+left:15px;
 width:250px;
+height:auto;
 ">
   
 <div class="inst1">HOSPITAL UNIVERSITÁRIO LAURO WANDERLEY</div>
