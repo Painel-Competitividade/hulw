@@ -16,13 +16,10 @@ background:#f4f6f5;
 }
 
 .institucional{
-position:relative;              /* necessário para posicionar a logo */
 text-align:center;
 background:white;
 padding:15px 10px 5px 10px;
-padding-left:320px;            /* espaço para logo de 300px */
 border-bottom:3px solid #8CC63F;
-min-height:120px;              /* garante altura suficiente */
 }
 
 .inst1{
@@ -220,23 +217,6 @@ box-shadow:0 0 10px rgba(0,0,0,0.2);
 
 @page{
 size:landscape;
-margin:20mm;
-}
-
-/* Logo repetindo em todas as páginas */
-.logo-print{
-position:fixed;
-top:10px;
-left:15px;
-width:200px;
-z-index:9999;
-}
-
-/* Evita sobrepor o conteúdo */
-body{
-margin-top:80px;
-}
-
 }
 
 .filtros{
@@ -259,16 +239,6 @@ display:none;
 </div>
 
 <div class="institucional">
-
-<img src="https://raw.githubusercontent.com/Painel-Competitividade/imagem/main/logo_HU-EBSERH2.png" 
-style="
-position:absolute;
-top:10px;
-left:15px;
-width:300px;
-height:auto;
-">
-  
 <div class="inst1">HOSPITAL UNIVERSITÁRIO LAURO WANDERLEY</div>
 <div class="inst2">UNIVERSIDADE FEDERAL DA PARAÍBA</div>
 <div class="inst3">EMPRESA BRASILEIRA DE SERVIÇOS HOSPITALARES</div>
@@ -709,6 +679,6 @@ a.click()
 }
 
 </script>
-  
+
 </body>
 </html>
