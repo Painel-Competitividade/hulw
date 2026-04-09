@@ -359,6 +359,7 @@ let sortDirection=1
 
 let chartPorte=null
 let chartLinha=null
+let mesSelecionadoAtual = null
 
 const googleSheetCSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vTQH6JfKGvaPplebHWWPH_6GLvWTc_Fr6Jx5VoAhwqgAnfAPGKnlMhtM8AzJcalvA/pub?gid=1616332808&single=true&output=csv"
 
@@ -557,7 +558,7 @@ const obs=document.getElementById("observacao")
 if(qtdFornecedores>=3){
 
 obs.className="observacao obs-positiva"
-obs.innerText="OBSERVAÇÃO: ✅ Com base nos dados do Portal Nacional de Dados Abertos e do Portal Nacional de Contratações Públicas referentes ao "+catmat+" utilizado na pesquisa, foram encontrados 3 (três) fornecedores ME/EPP participantes de licitações públicas federais, capazes de atender ao art. 47, II, da LC 123/2006, dentro do intervalo de "+periodo+"."
+obs.innerText="OBSERVAÇÃO: ✅ Com base nos dados do Portal Nacional de Dados Abertos e do Portal Nacional de Contratações Públicas referentes ao "+catmat+" utilizado na pesquisa, foram encontrados 3 (três) ou mais fornecedores ME/EPP participantes de licitações públicas federais, capazes de atender ao art. 47, II, da LC 123/2006, dentro do intervalo de "+periodo+"."
 
 }else{
 
@@ -584,32 +585,47 @@ if(porte==="ME") me++
 if(porte==="EPP") epp++
 })
 
-let fornecedoresPorData={}
+// ================================
+// AGRUPAMENTO POR MÊS
+// ================================
+let fornecedoresPorMes = {}
 
-data.forEach(r=>{
+data.forEach(r => {
 
 if(!r["DataObj"]) return
 
-let dataKey=formatDateBR(r["DataObj"])
+let d = r["DataObj"]
+let mes = String(d.getMonth()+1).padStart(2,"0")
+let ano = d.getFullYear().toString().slice(2)
+
+let chave = mes + "/" + ano
+
 let cnpj=(r["CNPJ"]||"").replace(/\D/g,"")
 
-if(!fornecedoresPorData[dataKey]){
-fornecedoresPorData[dataKey]=new Set()
+if(!fornecedoresPorMes[chave]){
+fornecedoresPorMes[chave] = {
+cnpjs: new Set(),
+datas: []
+}
 }
 
 if(cnpj){
-fornecedoresPorData[dataKey].add(cnpj)
+fornecedoresPorMes[chave].cnpjs.add(cnpj)
 }
 
+fornecedoresPorMes[chave].datas.push(d)
+
 })
 
-let labels=Object.keys(fornecedoresPorData).sort((a,b)=>{
-let da=a.split("/").reverse().join("-")
-let db=b.split("/").reverse().join("-")
-return new Date(da)-new Date(db)
+// ordenar meses corretamente
+let labels = Object.keys(fornecedoresPorMes).sort((a,b)=>{
+let [ma,ya]=a.split("/")
+let [mb,yb]=b.split("/")
+return new Date("20"+ya,ma-1) - new Date("20"+yb,mb-1)
 })
 
-let valores=labels.map(l=>fornecedoresPorData[l].size)
+// valores = total fornecedores por mês
+let valores = labels.map(l => fornecedoresPorMes[l].cnpjs.size)
 
 chartPorte=new Chart(document.getElementById("graficoPorte"),{
 type:"bar",
@@ -629,7 +645,7 @@ type:"line",
 data:{
 labels:labels,
 datasets:[{
-label:"Fornecedores", // ✅ CORREÇÃO AQUI
+label:"Fornecedores",
 data:valores,
 borderColor:"#8CC63F",
 backgroundColor:"#8CC63F",
@@ -638,8 +654,49 @@ tension:0.2
 },
 options:{
 plugins:{
-legend:{
-display:true
+legend:{display:true}
+},
+onClick: function(evt, elements){
+
+if(elements.length > 0){
+
+let index = elements[0].index
+let mesSelecionado = labels[index]
+
+// 🔁 SE CLICAR NO MESMO MÊS → VOLTA PARA TODOS
+if(mesSelecionadoAtual === mesSelecionado){
+
+mesSelecionadoAtual = null
+
+renderTable(data)
+
+document.getElementById("contador").innerText =
+data.length + " registros (todos os meses)"
+
+return
+}
+
+// ✅ APLICA FILTRO
+mesSelecionadoAtual = mesSelecionado
+
+let dadosMes = data.filter(r=>{
+
+if(!r["DataObj"]) return false
+
+let d=r["DataObj"]
+let mes = String(d.getMonth()+1).padStart(2,"0")
+let ano = d.getFullYear().toString().slice(2)
+
+return (mes + "/" + ano) === mesSelecionado
+
+})
+
+// atualizar tabela com datas detalhadas
+renderTable(dadosMes)
+
+document.getElementById("contador").innerText =
+dadosMes.length + " registros do mês " + mesSelecionado
+
 }
 }
 }
